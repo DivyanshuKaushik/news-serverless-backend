@@ -1,6 +1,6 @@
-const admin = require("firebase-admin");
 const authRouter = require("express").Router();
-const { check, validationResult } = require("express-validator");
+const { check } = require("express-validator");
+const {createUser,generateCookie} = require('../controllers/auth')
 
 // @route POST /api/signup
 // @desc Create User
@@ -13,35 +13,11 @@ authRouter.post(
     check('name','Name is Required!!').notEmpty().trim(),
     check("phone",'Phone is Required').notEmpty().isMobilePhone()
   ],
-  async (req, res) => {
-      const errors = validationResult(req)
-      if(!errors.isEmpty()){
-          return res.status(401).json({errors:errors.array()})
-      }
-      const {name,email,password,phone} = req.body
-    //  const role = "admin"
-      const {uid} = await admin.auth().createUser({name,email,password,phone})
-      await admin.auth().setCustomUserClaims(uid, { admin:true })
-      const data = await admin.auth().getUser(uid)
-      return res.status(201).json({ uid,data })
-  }
+  createUser
 );
 
-// @route POST /api/signin
-// @desc Login User
+// @route POST /api/sessonLogin
+// @desc verify user and generate sesson cookie
 // @access Public
-authRouter.post(
-    "/signin",
-    [
-      check("email", "Email is required!!").notEmpty().isEmail(),
-      check("password", "Password is required!!").notEmpty().trim(),
-    ],
-    async (req, res) => {
-        const errors = validationResult(req)
-        if(!errors.isEmpty()){
-            return res.status(401).json({errors:errors.array()})
-        }
-    }
-  );
-
+authRouter.post('/sessionLogin',generateCookie );
 module.exports = authRouter;
