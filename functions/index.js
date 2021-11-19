@@ -11,7 +11,9 @@ admin.initializeApp(functions.config().firebase);
 const db = admin.firestore();
 
 // import all routes 
-const authRouter = require('./routes/auth')
+const authRouter = require('./routes/auth');
+const postRouter = require("./routes/post");
+const { isAdmin, isEditor } = require("./middlewares/authenticate");
 
 //initialize express server
 const app = express();
@@ -19,15 +21,17 @@ const app = express();
 app.use(cors({origin:true}))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser())
 
 // csrf middleware
 const csrfMiddleware = csrf({cookie:true})
 app.all('*',(req,res,next)=>{
-  res.cookie("XSRF-TOKEN",req.csrfToken)
+  res.cookie("csrfToken",req.csrfToken)
   next()
 })
 // all routes 
 app.use(authRouter)
+app.use(postRouter)
 
 app.get('/',(req,res)=>{
   res.json({msg:"hello express api"})
@@ -57,6 +61,10 @@ app.post('/addUser',async(req,res)=>{
   }catch(e){
     res.json({err:e})
   }
+})
+
+app.get('/testAuth',isEditor,(req,res)=>{
+  res.json({role:"Admin",Uid:req.uid,data:req.data})
 })
 
 //define google cloud function name - api

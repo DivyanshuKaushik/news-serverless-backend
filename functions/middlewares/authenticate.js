@@ -1,40 +1,57 @@
 const admin = require('firebase-admin')
 
+// Allow access to requested admin resource.
 const isAdmin = (req,res,next)=>{
+  if(!idToken){
+    return res.status(401).json({error:"Unauthorized"})
+  }
+  const idToken = req.headers.authorization
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
-      if (decodedToken.claims.admin) {
-        // Allow access to requested admin resource.
+      if (decodedToken.admin) {
         req.uid = decodedToken.uid
+        req.data = decodedToken
         next()
       }else{
           return res.status(401).json({error:"Unauthorized"})
       }
-    });
+    }).catch((e)=>res.status(401).json({error:"Unauthorized"}));
 }
+
+// Allow access to requested editor resource.
 const isEditor = (req,res,next)=>{
+  const idToken = req.headers.authorization
+    if(!idToken){
+      return res.status(401).json({error:"Unauthorized"})
+    }
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
-      if (decodedToken.claims.admin || decodedToken.claims.admin) {
-        // Allow access to requested admin resource.
+      if (decodedToken.admin || decodedToken.editor) {
         req.uid = decodedToken.uid
+        req.data = decodedToken
         next()
       }else{
           return res.status(401).json({error:"Unauthorized"})
       }
-    });
+    }).catch((e)=>res.status(401).json({error:"Unauthorized"}));
 }
+
+// Allow access to requested user resource.
 const isUser = (req,res,next)=>{
+  if(!idToken){
+    return res.status(401).json({error:"Unauthorized"})
+  }
+  const idToken = req.headers.authorization
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
-      if (decodedToken.claims.user || decodedToken.claims.admin) {
-        // Allow access to requested admin resource.
+      if (decodedToken.user || decodedToken.admin) {
         req.uid = decodedToken.uid
+        req.data = decodedToken
         next()
       }else{
           return res.status(401).json({error:"Unauthorized"})
       }
-    });
+    }).catch((e)=>res.status(401).json({error:"Unauthorized"}));
 }
 
 module.exports ={

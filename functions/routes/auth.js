@@ -16,6 +16,8 @@ authRouter.post(
   createUser
 );
 
+// authRouter.post('/verify')
+
 // @route POST /api/sessonLogin
 // @desc verify user and generate sesson cookie
 // @access Public
