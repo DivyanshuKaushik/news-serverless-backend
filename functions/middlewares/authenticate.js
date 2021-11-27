@@ -37,14 +37,14 @@ const isEditor = (req,res,next)=>{
 }
 
 // Allow access to requested user resource.
-const isUser = (req,res,next)=>{
+const isReporter = (req,res,next)=>{
   if(!idToken){
     return res.status(401).json({error:"Unauthorized"})
   }
   const idToken = req.headers.authorization
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
-      if (decodedToken.user || decodedToken.admin) {
+      if (decodedToken.reporter || decodedToken.editor || decodedToken.admin) {
         req.uid = decodedToken.uid
         req.data = decodedToken
         next()
@@ -55,5 +55,5 @@ const isUser = (req,res,next)=>{
 }
 
 module.exports ={
-    isAdmin,isEditor,isUser
+    isAdmin,isEditor,isReporter
 }

@@ -22,4 +22,5 @@ authRouter.post(
 // @desc verify user and generate sesson cookie
 // @access Public
 authRouter.post('/sessionLogin',generateCookie );
+
 module.exports = authRouter;
