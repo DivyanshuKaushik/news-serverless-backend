@@ -1,7 +1,7 @@
 const postRouter = require("express").Router();
 // const { check } = require("express-validator");
 const { isEditor } = require("../middlewares/authenticate");
-const { getAllPosts, getUserPosts, getPublishedPost, getPublishedPostById, searchPost } = require("../controllers/post");
+const { getAllPosts, getUserPosts, getPublishedPost, getPublishedPostById, searchPost, getPublishedPostByCategory } = require("../controllers/post");
 
 
 // @route GET /api/getAllPosts
@@ -19,10 +19,15 @@ postRouter.get("/getUserPosts/:uid", getUserPosts);
 // @access Public
 postRouter.get("/getPublishedPosts", getPublishedPost);
 
-// @route GET /api/getPublishedPost
+// @route GET /api/getPublishedPostById
 // @desc get all published posts
 // @access Public
 postRouter.get("/getPublishedPostById/:id", getPublishedPostById);
+
+// @route GET /api/getPublishedPostByCategory
+// @desc get all published posts by category
+// @access Public
+postRouter.get("/getPublishedPostByCategory/:category", getPublishedPostByCategory);
 
 // @route GET /api/getPublishedPost
 // @desc get all published posts

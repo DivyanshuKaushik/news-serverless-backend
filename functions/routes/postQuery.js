@@ -1,6 +1,6 @@
 const postQueryRouter = require("express").Router();
 const { check } = require("express-validator");
-const { createPost, postStatus, editPost } = require("../controllers/postQuery");
+const { createPost, postStatus, editPost, deletePost } = require("../controllers/postQuery");
 const { isEditor } = require("../middlewares/authenticate");
 
 // @route POST /api/addPost
@@ -16,7 +16,8 @@ postQueryRouter.post(
       check("author", "Author is required!").notEmpty(),
       check("uid", "uid is required!").notEmpty(),
       check("time", "time is required!").notEmpty(),
-      check("imageUrl", "image url is required!").notEmpty().isURL(),
+      check("imageUrl", "image url is required!").notEmpty(),
+      check('category','category is required').notEmpty()
     ],
     createPost
 );
@@ -37,6 +38,15 @@ postQueryRouter.put(
       check("imageUrl", "image url is required!").notEmpty().isURL(),
     ],
     editPost
+);
+
+// @route  PATCH /api/postStatus
+// @desc   Update Publish Status
+// @access Private admin/editor
+postQueryRouter.delete(
+    "/deletePost/:uid/:id",
+    // isEditor,
+    deletePost
 );
 
 // @route  PATCH /api/postStatus

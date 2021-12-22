@@ -8,10 +8,10 @@ const db = admin.firestore()
 const createPost = async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-        return res.status(401).json({errors:errors.array()})
+        return res.status(400).json({errors:errors.array()})
     }
     try{
-        let {title,summary,source,uid,author,time,imageUrl} = req.body
+        let {title,summary,source,uid,author,time,imageUrl,category} = req.body
         // time format - 06:41 PM 18 Nov 2021,Thursday
         title = slugify(title,{
             lower:true,
@@ -20,7 +20,7 @@ const createPost = async (req, res) => {
         let dateObj = new Date();
         time = `${dateObj.toLocaleTimeString()} ${dateObj.toDateString()}`
         const newPost = {
-            title,summary,source,uid,author,time,imageUrl,publish:false,timestamp:admin.firestore.FieldValue.serverTimestamp()
+            title,summary,source,uid,author,time,imageUrl,category,publish:false,timestamp:admin.firestore.FieldValue.serverTimestamp()
         }
         // await db.collection("posts").doc(uid).collection('posts').add(newPost)
         await db.collection(`posts/${uid}/posts`).add(newPost)
@@ -70,6 +70,15 @@ const editPost = async (req, res) => {
     }
 }
 
+const deletePost = (req,res)=>{
+    const {uid,id} = req.params 
+    db.collection('posts').doc(uid).collection('posts').doc(id).delete().then(()=>{
+        return res.json({msg:"Post deleted"})
+    }).catch((e)=>{
+        return res.json({error:e})
+    })
+}
+
 module.exports = {
-    createPost,postStatus,editPost
+    createPost,postStatus,editPost,deletePost
 }

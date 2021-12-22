@@ -2,10 +2,10 @@ const admin = require('firebase-admin')
 
 // Allow access to requested admin resource.
 const isAdmin = (req,res,next)=>{
+  const idToken = req.headers.authorization || req.cookies.userToken
   if(!idToken){
     return res.status(401).json({error:"Unauthorized"})
   }
-  const idToken = req.headers.authorization
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
       if (decodedToken.admin) {
@@ -20,7 +20,7 @@ const isAdmin = (req,res,next)=>{
 
 // Allow access to requested editor resource.
 const isEditor = (req,res,next)=>{
-  const idToken = req.headers.authorization
+  const idToken = req.headers.authorization || req.cookies.userToken
     if(!idToken){
       return res.status(401).json({error:"Unauthorized"})
     }
@@ -41,7 +41,7 @@ const isReporter = (req,res,next)=>{
   if(!idToken){
     return res.status(401).json({error:"Unauthorized"})
   }
-  const idToken = req.headers.authorization
+  const idToken = req.headers.authorization || req.cookies.userToken
     admin.auth().verifyIdToken(idToken)
     .then((decodedToken) => {
       if (decodedToken.reporter || decodedToken.editor || decodedToken.admin) {

@@ -59,7 +59,6 @@ const getPublishedPost = async(req,res)=>{
       res.status(400).json({error})
     }
 }
-
 const getPublishedPostById = async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
@@ -81,6 +80,26 @@ const getPublishedPostById = async (req, res) => {
         
     }catch(error){
         // console.log(error)
+      res.status(400).json({error})
+    }
+}
+
+const getPublishedPostByCategory = async(req,res)=>{
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        return res.status(401).json({errors:errors.array()})
+    }
+    try{
+        const {category} = req.params
+        db.collectionGroup('posts').where("publish","==",true).where('category','==',category).orderBy("timestamp",'desc').get().then(snapshot=>{     
+            let posts = []
+            snapshot.forEach(doc=>{
+                posts.push({id:doc.id,...doc.data()})
+            })
+            res.status(200).json(posts)
+        }).catch((e)=>{return res.json(e)})
+       
+    }catch(error){
       res.status(400).json({error})
     }
 }
@@ -108,5 +127,5 @@ const searchPost = async(req,res)=>{
 
 
 module.exports = {
-   getAllPosts,getUserPosts,getPublishedPost,getPublishedPostById,searchPost
+   getAllPosts,getUserPosts,getPublishedPost,getPublishedPostById,searchPost,getPublishedPostByCategory
 }
